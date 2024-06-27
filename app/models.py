@@ -2,11 +2,11 @@ from sqlalchemy import Column, Integer, String, DateTime
 from .database import Base
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, index=True)
     user_name = Column(String, index=True)
-    codigo_zip = Column(String)
+    codigo_zip = Column(String, index=True)
     credit_card_num = Column(String)
     credit_card_ccv = Column(String)
     cuenta_numero = Column(String)

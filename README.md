@@ -2,7 +2,7 @@
 
 ## Descripción
 
-Este proyecto utiliza FastAPI para crear un API que maneja usuarios y sus datos asociados. La información se almacena en una base de datos PostgreSQL.
+Este proyecto utiliza FastAPI para crear un API que maneja usuarios y sus datos asociados. La información se almacena en una base de datos PostgreSQL y se asegura utilizando cifrado para datos sensibles.
 
 ## Estructura del Proyecto
 
@@ -11,8 +11,9 @@ Este proyecto utiliza FastAPI para crear un API que maneja usuarios y sus datos 
   - `database.py`: Configuración de la conexión a la base de datos.
   - `models.py`: Definición de los modelos de datos.
   - `schemas.py`: Definición de los esquemas Pydantic.
-  - `routers/`
-    - `users.py`: Rutas y lógica para manejar usuarios.
+  - `crud.py`: Funciones CRUD para interactuar con la base de datos.
+  - `encryption.py`: Funciones para encriptar y desencriptar datos.
+  - `config.py`: Configuración de variables de entorno.
 
 ## Instalación y Configuración
 
@@ -27,21 +28,21 @@ Este proyecto utiliza FastAPI para crear un API que maneja usuarios y sus datos 
 
 1. Clonar el repositorio:
 
-   ```sh
+   ```bash
    git clone <URL-del-repositorio>
    cd challenge-seguridad
    ```
 
 2. Crear y activar un entorno virtual:
 
-   ```sh
+   ```bash
    python3 -m venv venv
    source venv/bin/activate
    ```
 
 3. Instalar las dependencias:
 
-   ```sh
+   ```bash
    pip install -r requirements.txt
    ```
 
@@ -52,12 +53,13 @@ Este proyecto utiliza FastAPI para crear un API que maneja usuarios y sus datos 
 
 5. Ejecutar la aplicación:
 
-   ```sh
+   ```bash
    uvicorn app.main:app --reload
    ```
 
 6. Acceder a la documentación automática de la API en:
-   ```arduino
+
+   ```bash
    http://127.0.0.1:8000/docs
    ```
 
@@ -65,6 +67,7 @@ Este proyecto utiliza FastAPI para crear un API que maneja usuarios y sus datos 
 
 - Conexión a la base de datos PostgreSQL.
 - Recuperación de datos de usuarios.
+- Encriptación y desencriptación de datos sensibles.
 - Documentación automática con Swagger en /docs.
 
 ## Pasos Pendientes
