@@ -1,4 +1,4 @@
-# Challenge Seguridad - Proyecto FastAPI
+# Challenge Seguridad 
 
 ## Descripción
 
