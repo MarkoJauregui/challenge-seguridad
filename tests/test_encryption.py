@@ -1,5 +1,4 @@
-# test_encryption.py
-from cryptography.fernet import Fernet, InvalidToken
+from cryptography.fernet import Fernet
 import os
 import hvac
 
@@ -11,7 +10,7 @@ vault_token = os.getenv('VAULT_TOKEN')
 vault_client = hvac.Client(url=vault_url, token=vault_token)
 
 # Obtener la clave de encriptación desde Vault
-vault_secret = vault_client.secrets.kv.v2.read_secret_version(path='encryption-key')
+vault_secret = vault_client.secrets.kv.v2.read_secret_version(path='encryption-key')  # Ajusta la ruta aquí
 encryption_key = vault_secret['data']['data']['key'].encode()
 cipher = Fernet(encryption_key)
 
@@ -19,17 +18,13 @@ def encrypt_data(data: str) -> str:
     return cipher.encrypt(data.encode()).decode()
 
 def decrypt_data(data: str) -> str:
-    try:
-        return cipher.decrypt(data.encode()).decode()
-    except InvalidToken as e:
-        raise ValueError("Invalid token for decryption") from e
+    return cipher.decrypt(data.encode()).decode()
 
-# Prueba de encriptación y desencriptación
-data = "test_data"
-print(f"Original Data: {data}")
-
-encrypted_data = encrypt_data(data)
-print(f"Encrypted Data: {encrypted_data}")
-
+# Probar la encriptación y desencriptación
+original_data = "test_data"
+encrypted_data = encrypt_data(original_data)
 decrypted_data = decrypt_data(encrypted_data)
-print(f"Decrypted Data: {decrypted_data}")
+
+print("Original Data:", original_data)
+print("Encrypted Data:", encrypted_data)
+print("Decrypted Data:", decrypted_data)

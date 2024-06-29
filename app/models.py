@@ -22,5 +22,6 @@ class User(Base):
     auto_color = Column(String)
     cantidad_compras_realizadas = Column(Integer)
     avatar = Column(String)
-    fec_birthday = Column(DateTime)
-    fec_alta = Column(DateTime)
+    fec_birthday = Column(DateTime, nullable=True)
+    fec_alta = Column(DateTime, nullable=True)
+    hashed_password = Column(String)

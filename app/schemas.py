@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 class UserBase(BaseModel):
     user_name: str
@@ -19,14 +20,21 @@ class UserBase(BaseModel):
     auto_color: str
     cantidad_compras_realizadas: int
     avatar: str
-    fec_birthday: datetime
-    fec_alta: datetime
+    fec_birthday: Optional[datetime] = None
+    fec_alta: Optional[datetime] = None
 
 class UserCreate(UserBase):
-    pass
+    password: str
 
 class User(UserBase):
     id: int
 
     class Config:
         from_attributes = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
 from . import models
-from app.encryption import encrypt_data, decrypt_data
+from app.encryption import encrypt_data
 
 def parse_datetime(date_str):
     try:
@@ -38,7 +38,7 @@ def create_user(db: Session, user: dict):
         'cantidad_compras_realizadas': user['cantidad_compras_realizadas'],
         'avatar': user['avatar'],
         'fec_birthday': parse_datetime(user['fec_birthday']),
-        'fec_alta': parse_datetime(user['fec_alta'])
+        'fec_alta': parse_datetime(user['fec_alta']),
     }
     db_user = models.User(**encrypted_user)
     db.add(db_user)
@@ -47,5 +47,4 @@ def create_user(db: Session, user: dict):
     return db_user
 
 def get_users(db: Session, skip: int = 0, limit: int = 10):
-    users = db.query(models.User).offset(skip).limit(limit).all()
-    return users
+    return db.query(models.User).offset(skip).limit(limit).all()

@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException
-import requests
 from sqlalchemy.orm import Session
 from app import models, schemas, crud, database
 from app.encryption import encrypt_data, decrypt_data
-from typing import List
 import logging
+import requests
+from typing import List
 
 app = FastAPI()
 
@@ -33,14 +33,15 @@ def get_users(db: Session = Depends(database.get_db)):
                 encrypted_user['credit_card_ccv'] = encrypt_data(user['credit_card_ccv'])
                 encrypted_user['cuenta_numero'] = encrypt_data(user['cuenta_numero'])
                 db_user = crud.create_user(db=db, user=encrypted_user)
-        return users
+        return {"message": "Users fetched and stored successfully."}
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
+        logger.error("Error fetching or storing users", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/internal-users", response_model=List[schemas.User])
-def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(database.get_db)):
+def read_internal_users(skip: int = 0, limit: int = 10, db: Session = Depends(database.get_db)):
     try:
         users = crud.get_users(db, skip=skip, limit=limit)
         decrypted_users = []
