@@ -1,114 +1,159 @@
-# Challenge Seguridad 
+# Challenge Seguridad
 
-## Descripción
+Este proyecto se ha desarrollado para obtener información de clientes desde un proveedor externo, garantizar que la información esté asegurada en todos sus estados y disponibilizar recursos para que la misma sea accesible por distintos sectores dentro de la empresa.
 
-Este proyecto utiliza FastAPI para crear un API que maneja usuarios y sus datos asociados. La información se almacena en una base de datos PostgreSQL y se asegura utilizando cifrado para datos sensibles.
+## Objetivo
 
-## Estructura del Proyecto
+El objetivo es consumir y almacenar datos de manera segura en una base de datos relacional, y disponibilizar esta información para que distintos equipos y aplicaciones de la empresa puedan consumirla.
 
-- `app/`
-  - `main.py`: Configuración y rutas principales de la aplicación.
-  - `database.py`: Configuración de la conexión a la base de datos.
-  - `models.py`: Definición de los modelos de datos.
-  - `schemas.py`: Definición de los esquemas Pydantic.
-  - `crud.py`: Funciones CRUD para interactuar con la base de datos.
-  - `encryption.py`: Funciones para encriptar y desencriptar datos.
-  - `config.py`: Configuración de variables de entorno.
+## Endpoints
 
-## Instalación y Configuración
+### Obtener y almacenar usuarios
 
-### Prerrequisitos
+**GET /users**
 
-- Python 3.10
-- PostgreSQL
-- PIP
-- Git
+Este endpoint obtiene los datos de los usuarios desde el proveedor externo y los almacena en la base de datos.
 
-### Pasos de Instalación
+**Respuesta Exitosa**
 
-1. Clonar el repositorio:
+```json
+{
+	"message": "Users fetched and stored successfully."
+}
+```
 
-   ```bash
-   git clone <URL-del-repositorio>
-   cd challenge-seguridad
-   ```
+### Listar usuarios internos
 
-2. Crear y activar un entorno virtual:
+**GET /internal-users**
 
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
+Este endpoint lista los usuarios almacenados en la base de datos, con los datos sensibles encriptados y desencriptados para la visualización.
 
-3. Instalar las dependencias:
+**Parámetros de Consulta**
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+- `skip` (opcional): Omitir registros. Default: 0
+- `limit` (opcional): Límite de registros. Default: 10
 
-4. Configurar la base de datos PostgreSQL:
+**Respuesta Exitosa**
 
-- Crear una base de datos y usuario en PostgreSQL.
-- Actualizar la variable DATABASE_URL en el archivo .env con la cadena de conexión a la base de datos.
+```json
+[
+	{
+		"user_name": "exampleuser",
+		"codigo_zip": "12345",
+		"credit_card_num": "****",
+		"credit_card_ccv": "****",
+		"cuenta_numero": "****",
+		"direccion": "123 Main St",
+		"geo_latitud": "40.7128",
+		"geo_longitud": "-74.0060",
+		"color_favorito": "blue",
+		"foto_dni": "http://example.com/photo.jpg",
+		"ip": "192.168.1.1",
+		"auto": "Toyota",
+		"auto_modelo": "Corolla",
+		"auto_tipo": "Sedan",
+		"auto_color": "Red",
+		"cantidad_compras_realizadas": 5,
+		"avatar": "http://example.com/avatar.jpg",
+		"fec_birthday": "1990-01-01T00:00:00",
+		"fec_alta": "2021-01-01T00:00:00",
+		"id": 1
+	}
+]
+```
 
-5. Ejecutar la aplicación:
+### Autenticación
 
-   ```bash
-   uvicorn app.main:app --reload
-   ```
+**POST /token**
 
-6. Acceder a la documentación automática de la API en:
+Este endpoint genera un token de acceso basado en las credenciales proporcionadas.
 
-   ```bash
-   http://127.0.0.1:8000/docs
-   ```
+**Cuerpo de la Solicitud**
 
-## Funcionalidades Implementadas:
+```json
+{
+	"username": "exampleuser",
+	"password": "examplepassword"
+}
+```
 
-- Conexión a la base de datos PostgreSQL.
-- Recuperación de datos de usuarios.
-- Encriptación y desencriptación de datos sensibles.
-- Documentación automática con Swagger en /docs.
+**Respuesta Exitosa**
 
-## Pasos Pendientes
+```
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token_type": "bearer"
+}
+```
 
-1. **Validaciones**:
+## Configuración del Entorno
 
-   - Añadir validaciones en los esquemas y rutas.
-   - Verificar el manejo de errores.
+### Variables de Entorno
 
-2. **Funciones CRUD**:
+Asegúrate de definir las siguientes variables de entorno en un archivo `.env`:
 
-   - Implementar las funciones de creación, actualización y eliminación de usuarios.
+```
+SQLALCHEMY_DATABASE_URL=postgresql://challenge_user:newpassword@localhost/challenge_db
+VAULT_ADDR=http://127.0.0.1:8200
+VAULT_TOKEN=hvs.CAESIJIIem80M-hmIjtlhjqkzowsRGIX5mwPq1A0AbfA30bZGh4KHGh2cy5ldGhjaDFDaGVlYUZIeHJPUUY2UUM1aEw
+VAULT_SKIP_VERIFY=true
+SECRET_KEY=79be785431976e770e08d1c7439b6d97a3ddc73aa3dcfe43ade0ee383d8acfca
+```
 
-3. **Autenticación y Autorización**:
+### Inicializar Vault
 
-   - Añadir autenticación de usuarios (JWT, OAuth2, etc.).
-   - Implementar autorización para diferentes roles de usuario.
+Para inicializar y configurar Vault, sigue los siguientes pasos:
 
-4. **Pruebas**:
+1. Iniciar Vault en modo de desarrollo:
 
-   - Crear pruebas unitarias y de integración.
-   - Configurar CI/CD para ejecutar las pruebas automáticamente.
+```bash
+vault server -dev
+```
 
-5. **Documentación**:
+2. Configurar el token de Vault y la clave de encriptación:
 
-   - Completar la documentación de la API y del proyecto.
-   - Añadir ejemplos de uso en el README.
+```
+export VAULT_ADDR='http://127.0.0.1:8200'
+vault login <root_token>
+vault kv put secret/encryption-key key=$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')
+```
 
-6. **Despliegue**:
-   - Configurar el despliegue en un servidor de producción.
-   - Considerar el uso de Docker para el despliegue.
+### Crear la base de datos
 
-## Notas Adicionales
+1. Acceder a PostgreSQL y crear la base de datos:
 
-- Asegúrate de que la carpeta `venv` esté incluida en el `.gitignore` para evitar subir archivos innecesarios al repositorio.
-- El archivo `.env` no debe ser incluido en el control de versiones por razones de seguridad.
+```bash
+psql -U postgres
+CREATE DATABASE challenge_db;
+CREATE USER challenge_user WITH ENCRYPTED PASSWORD 'newpassword';
+GRANT ALL PRIVILEGES ON DATABASE challenge_db TO challenge_user;
+```
 
-## Autores
+2. Configurar la autenticación en PostgreSQL editando el archivo `pg_hba.conf`:
 
-- **Marko Jauregui** - Desarrollador Principal
+```bash
+# Editar el archivo /etc/postgresql/14/main/pg_hba.conf y cambiar:
+local   all             postgres                                peer
+# a:
+local   all             postgres                                md5
+```
 
-## Contacto
+3. Reiniciar el servicio de PostgreSQL:
 
-Para cualquier pregunta o problema, por favor contacta a [Marko Jauregui](https://www.linkedin.com/in/marko-jauregui/).
+```bash
+sudo service postgresql restart
+```
+
+### Ejecutar la aplicación
+
+1. Instalar las dependencias:
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Iniciar la aplicación:
+
+```
+uvicorn main:app --reload
+```
