@@ -1,5 +1,22 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from .database import Base
+
+class Role(Base):
+    __tablename__ = "role"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True)
+    description = Column(String)
+
+class InternalUser(Base):
+    __tablename__ = "internal_user"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    role_id = Column(Integer, ForeignKey('role.id'))
+    role = relationship("Role")
 
 class User(Base):
     __tablename__ = "user"
@@ -24,4 +41,3 @@ class User(Base):
     avatar = Column(String)
     fec_birthday = Column(DateTime, nullable=True)
     fec_alta = Column(DateTime, nullable=True)
-    hashed_password = Column(String)

@@ -22,11 +22,25 @@ class UserBase(BaseModel):
     avatar: str
     fec_birthday: Optional[datetime] = None
     fec_alta: Optional[datetime] = None
+    role_id: Optional[int]  # Hacer que role_id sea opcional
 
 class UserCreate(UserBase):
     password: str
 
 class User(UserBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class InternalUserBase(BaseModel):
+    username: str
+    role_id: int
+
+class InternalUserCreate(InternalUserBase):
+    password: str
+
+class InternalUser(InternalUserBase):
     id: int
 
     class Config:
