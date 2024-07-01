@@ -41,3 +41,4 @@ class User(Base):
     avatar = Column(String)
     fec_birthday = Column(DateTime, nullable=True)
     fec_alta = Column(DateTime, nullable=True)
+    role_id = Column(Integer, ForeignKey('role.id'), nullable=True)  # Agrega esta línea

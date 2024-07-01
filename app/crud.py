@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
-from . import models, schemas  # Asegúrate de importar schemas
+from . import models, schemas
 from app.encryption import encrypt_data
 from passlib.context import CryptContext
 
@@ -49,7 +49,6 @@ def create_user(db: Session, user: dict):
     db.commit()
     db.refresh(db_user)
     return db_user
-
 
 def get_users(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.User).offset(skip).limit(limit).all()
