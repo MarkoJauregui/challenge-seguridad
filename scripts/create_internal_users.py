@@ -16,8 +16,8 @@ def get_or_create_role(db: Session, role_name: str, role_description: str):
     return role
 
 # Crear roles si no existen
-admin_role = get_or_create_role(db, 'admin', 'Administrator role')
-user_role = get_or_create_role(db, 'user', 'Regular user role')
+admin_role = get_or_create_role(db, 'admin', 'Rol de Administrador')
+user_role = get_or_create_role(db, 'user', 'Rol de Usuario Regular')
 
 # Crear usuario con rol de administrador si no existe
 admin_user = db.query(models.InternalUser).filter(models.InternalUser.username == 'adminuser').first()

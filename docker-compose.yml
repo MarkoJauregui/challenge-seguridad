@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - vault
+    environment:
+      - PYTHONPATH=/app
+    entrypoint: >
+      sh -c "while ! curl -s http://vault:8200/v1/sys/health | grep -q '\"initialized\":true,\"sealed\":false'; do
+               echo 'Waiting for Vault to start...';
+               sleep 2;
+             done;
+             python /app/scripts/generate_and_store_key.py;
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: challenge_user
+      POSTGRES_PASSWORD: newpassword
+      POSTGRES_DB: challenge_db
+    ports:
+      - '5432:5432'
+
+  vault:
+    image: vault:1.9.0
+    ports:
+      - '8200:8200'
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root
+      VAULT_DEV_LISTEN_ADDRESS: '0.0.0.0:8200'
+    command: 'server -dev'

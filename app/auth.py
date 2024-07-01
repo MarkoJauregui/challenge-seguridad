@@ -22,7 +22,7 @@ def create_access_token(data: dict):
 def get_current_user(db: Session = Depends(database.get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=401,
-        detail="Could not validate credentials",
+        detail="No se pudieron validar las credenciales",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:

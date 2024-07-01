@@ -42,7 +42,7 @@ def create_user(db: Session, user: dict):
         'avatar': user['avatar'],
         'fec_birthday': parse_datetime(user['fec_birthday']),
         'fec_alta': parse_datetime(user['fec_alta']),
-        'role_id': 2  # Asignar el role_id de "user" por defecto
+        'role_id': 2  # Asigna el role_id de "usuario" por defecto
     }
     db_user = models.User(**encrypted_user)
     db.add(db_user)

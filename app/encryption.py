@@ -1,24 +1,25 @@
-from cryptography.fernet import Fernet, InvalidToken
-import os
 import hvac
+import os
+from cryptography.fernet import Fernet
 
-# Cargar las variables de entorno
-vault_url = os.getenv('VAULT_ADDR')
-vault_token = os.getenv('VAULT_TOKEN')
+vault_url = os.getenv('VAULT_URL', 'http://vault:8200')
+vault_token = os.getenv('VAULT_TOKEN', 'root')
+client = hvac.Client(url=vault_url, token=vault_token)
 
-# Configurar cliente de Vault
-vault_client = hvac.Client(url=vault_url, token=vault_token)
+# Lee la clave de cifrado de Vault
+vault_secret = client.secrets.kv.v2.read_secret_version(path='encryption-key')
+print("Vault Secret:", vault_secret)  # Agrega esta línea para imprimir el contenido completo
 
-# Obtener la clave de encriptación desde Vault
-vault_secret = vault_client.secrets.kv.v2.read_secret_version(path='encryption-key')
+# Ajuste basado en la estructura actual del diccionario
 encryption_key = vault_secret['data']['data']['key'].encode()
 cipher = Fernet(encryption_key)
 
-def encrypt_data(data: str) -> str:
-    return cipher.encrypt(data.encode()).decode()
+def encrypt_data(data):
+    if isinstance(data, str):
+        data = data.encode()
+    return cipher.encrypt(data).decode()  # Asegúrate de que se devuelva como cadena
 
-def decrypt_data(data: str) -> str:
-    try:
-        return cipher.decrypt(data.encode()).decode()
-    except InvalidToken as e:
-        raise ValueError("Invalid token for decryption") from e
+def decrypt_data(token):
+    if isinstance(token, str):
+        token = token.encode()
+    return cipher.decrypt(token).decode()  # Asegúrate de que se devuelva como cadena
