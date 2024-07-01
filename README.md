@@ -136,3 +136,7 @@ limit: int (opcional, por defecto 10)
 - **Medida**: Autenticación de usuarios mediante tokens JWT.
 - **Riesgo**: Acceso no autorizado a los datos.
 - **Mitigación**: Implementación de OAuth2 y JWT para la gestión de sesiones y accesos.
+
+## Diagrama de clases
+
+![Diagrama Clases](images/Diagrama-clases.png)
