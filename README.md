@@ -1,92 +1,138 @@
-# Challenge Seguridad
+# Challenge - Seguridad Informática
 
-## Descripción
+## Objetivo
 
-Este proyecto es un API para la gestión de usuarios y autenticación interna. Utiliza FastAPI y SQLAlchemy para manejar las operaciones de base de datos y la autenticación.
+El objetivo del proyecto es obtener información de clientes desde un proveedor externo, garantizar que la información esté asegurada en todos sus estados y disponibilizar recursos para que la misma sea accesible por distintos sectores dentro de la empresa.
 
-## Requisitos
+## Tecnologías Utilizadas
 
-- Python 3.10+
+- Python
+- FastAPI
+- SQLAlchemy
 - PostgreSQL
-- Entorno virtual de Python
-- [Poetry](https://python-poetry.org/) (opcional, pero recomendado)
-- [Docker](https://www.docker.com/) (opcional, para simplificar la configuración de la base de datos)
+- Vault
+- Docker
 
-## Configuración
+## Instalación y Ejecución
 
-### 1. Clonar el repositorio
+1. Clonar el repositorio.
 
-```bash
-git clone <URL_DEL_REPOSITORIO>
-cd challenge-seguridad
+   ```bash
+   git clone https://github.com/tu-repo.git
+   cd tu-repo
+   ```
+
+2. Crear un archivo `.env` en el directorio raíz con el siguiente contenido:
+
+   ```
+   SQLALCHEMY_DATABASE_URL=postgresql://challenge_user:newpassword@db/challenge_db
+   VAULT_ADDR=http://vault:8200
+   VAULT_TOKEN=root
+   VAULT_SKIP_VERIFY=true
+   SECRET_KEY=79be785431976e770e08d1c7439b6d97a3ddc73aa3dcfe43ade0ee383d8acfca
+   ```
+
+3. Construir y ejecutar los contenedores Docker.
+
+   ```bash
+   docker-compose up --build
+   ```
+
+4. Crear los usuarios internos de prueba.
+   ```
+   docker exec -it challenge-seguridad_web_1 /bin/bash
+   python /app/scripts/create_internal_users.py
+   ```
+
+## Uso de la API
+
+### Obtener Token de Acceso
+
+**Endpoint:** `/token`  
+**Método:** `POST`  
+**Cuerpo:**
+
+```json
+{
+	"username": "adminuser",
+	"password": "adminpassword"
+}
 ```
 
-### 2. Crear y activar un entorno virtual
+![Token Endpoint](images/Token-endpoint.JPG)
 
-```bash
-python -m venv venv
-source venv/bin/activate  # En Windows usa `venv\Scripts\activate`
-```
+### Obtener Usuarios
 
-### 3. Instalar las dependencias
+**Endpoint:** `/users`  
+**Método:** `GET`  
+**Autenticación:** No requerida
+![Users Endpoint](images/Users-Endpoint.JPG)
 
-```bash
-pip install -r requirements.txt
-```
+### Obtener Usuarios Internos
 
-### 4. Configurar las variables de entorno
+**Endpoint:** `/internal-users`  
+**Método:** `GET`  
+**Autenticación:** Requerida
 
-Crea un archivo `.env` en el directorio raíz del proyecto con las siguientes variables:
-
-```env
-SECRET_KEY=<tu_secret_key>
-SQLALCHEMY_DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<database>
-VAULT_ADDR=<vault_address>
-VAULT_TOKEN=<vault_token>
-```
-
-### 5. Crear la base de datos y las tablas
-
-Asegúrate de que PostgreSQL está en funcionamiento y ejecuta el siguiente comando:
-
-```bash
-python create_internal_users.py
-```
-
-Este script creará las tablas necesarias y añadirá usuarios internos con roles de administrador y usuario regular.
-
-### 6. Ejecutar la aplicación
-
-```bash
-uvicorn main:app --reload
-```
-
-La aplicación estará disponible en `http://127.0.0.1:8000`.
-
-## Uso
-
-### Obtener token de acceso
-
-Para obtener un token de acceso, realiza una solicitud `POST` a `/token` con los siguientes parámetros en el body (x-www-form-urlencoded):
+**Headers:**
 
 ```
-username: adminuser
-password: adminpassword
+Authorization: Bearer <access_token>
 ```
 
-### Obtener usuarios externos
+**Parámetros de Query:**
 
-Realiza una solicitud `GET` a `/users` para obtener y almacenar usuarios desde el proveedor externo.
+```
+skip: int (opcional, por defecto 0)
+limit: int (opcional, por defecto 10)
+```
 
-### Obtener usuarios internos
+![Internal Users Endpoint](images/Internal-Users-Endpoint.JPG)
 
-Realiza una solicitud `GET` a `/internal-users` con el token de acceso como Bearer token en el encabezado de autorización.
+## Encriptar Datos
 
-## Autores
+**Endpoint:** `/encrypt`  
+**Método:** `POST`  
+**Cuerpo:**
 
-- **Marko Jauregui**
-- **Colaboradores**
+```json
+{
+	"data": "Texto a cifrar"
+}
+```
 
-## Licencia
+![Encrypt Endpoint](images/Test-Encryption.JPG)
 
-Este proyecto está licenciado bajo los términos de la licencia MIT.
+## Desencriptar Datos
+
+**Endpoint:** `/decrypt`  
+**Método:** `POST`  
+**Cuerpo:**
+
+```json
+{
+	"token": "Dato Cifrado"
+}
+```
+
+![Decrypt Endpoint](images/Test-Decryption.JPG)
+
+## Análisis de Riesgo
+
+### Confidencialidad
+
+- **Medida**: Uso de encriptación para datos sensibles como números de tarjeta de crédito, CVV y números de cuenta.
+- **Riesgo**: Exposición de datos sensibles en caso de una brecha de seguridad.
+- **Mitigación**: Implementación de Vault para la gestión de claves y uso de cifrado fuerte (Fernet).
+
+### Integridad
+
+- **Medida**: Validación de datos entrantes y salientes.
+- **Riesgo**: Alteración de datos por parte de usuarios malintencionados.
+- **Mitigación**: Uso de tokens de acceso para autenticar y autorizar solicitudes.
+
+### Autenticidad
+
+- **Medida**: Autenticación de usuarios mediante tokens JWT.
+- **Riesgo**: Acceso no autorizado a los datos.
+- **Mitigación**: Implementación de OAuth2 y JWT para la gestión de sesiones y accesos.
