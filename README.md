@@ -22,23 +22,29 @@ El objetivo del proyecto es obtener información de clientes desde un proveedor 
    cd tu-repo
    ```
 
-2. Crear un archivo `.env` en el directorio raíz con el siguiente contenido:
+2. Crear una `SECRET_KEY` de forma segura utilizando `openssl`.
+
+   ```bash
+   openssl rand -hex 32
+   ```
+
+3. Crear un archivo `.env` en el directorio raíz con el siguiente contenido:
 
    ```
    SQLALCHEMY_DATABASE_URL=postgresql://challenge_user:newpassword@db/challenge_db
    VAULT_ADDR=http://vault:8200
    VAULT_TOKEN=root
    VAULT_SKIP_VERIFY=true
-   SECRET_KEY=79be785431976e770e08d1c7439b6d97a3ddc73aa3dcfe43ade0ee383d8acfca
+   SECRET_KEY=secret-key
    ```
 
-3. Construir y ejecutar los contenedores Docker.
+4. Construir y ejecutar los contenedores Docker.
 
    ```bash
    docker-compose up --build
    ```
 
-4. Crear los usuarios internos de prueba.
+5. Crear los usuarios internos de prueba.
    ```
    docker exec -it challenge-seguridad_web_1 /bin/bash
    python /app/scripts/create_internal_users.py
