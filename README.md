@@ -1,10 +1,10 @@
 # Challenge - Seguridad Informática
 
-## Objetivo
+## Objective
 
-El objetivo del proyecto es obtener información de clientes desde un proveedor externo, garantizar que la información esté asegurada en todos sus estados y disponibilizar recursos para que la misma sea accesible por distintos sectores dentro de la empresa.
+The objective of the project is to obtain client information from an external provider, ensure the information is secured in all states, and make resources available so that it is accessible by different sectors within the company.
 
-## Tecnologías Utilizadas
+## Technologies Used
 
 - Python
 - FastAPI
@@ -13,22 +13,22 @@ El objetivo del proyecto es obtener información de clientes desde un proveedor 
 - Vault
 - Docker
 
-## Instalación y Ejecución
+## Installation and Execution
 
-1. Clonar el repositorio.
+1. Clone the repository.
 
    ```bash
    git clone https://github.com/tu-repo.git
    cd tu-repo
    ```
 
-2. Crear una `SECRET_KEY` de forma segura utilizando `openssl`.
+2. Securely create a `SECRET_KEY` using `openssl`.
 
    ```bash
    openssl rand -hex 32
    ```
 
-3. Crear un archivo `.env` en el directorio raíz con el siguiente contenido:
+3. Create a .env file in the root directory with the following content:
 
    ```
    SQLALCHEMY_DATABASE_URL=postgresql://challenge_user:newpassword@db/challenge_db
@@ -38,25 +38,25 @@ El objetivo del proyecto es obtener información de clientes desde un proveedor 
    SECRET_KEY=secret-key
    ```
 
-4. Construir y ejecutar los contenedores Docker.
+4. Build and run the Docker containers.
 
    ```bash
    docker-compose up --build
    ```
 
-5. Crear los usuarios internos de prueba.
+5. Create internal test users. code
    ```
    docker exec -it challenge-seguridad_web_1 /bin/bash
    python /app/scripts/create_internal_users.py
    ```
 
-## Uso de la API
+## API Usage
 
-### Obtener Token de Acceso
+### Obtain Access Token
 
 **Endpoint:** `/token`  
-**Método:** `POST`  
-**Cuerpo:**
+**Method:** `POST`  
+**Body:**
 
 ```json
 {
@@ -67,18 +67,18 @@ El objetivo del proyecto es obtener información de clientes desde un proveedor 
 
 ![Token Endpoint](images/Token-endpoint.JPG)
 
-### Obtener Usuarios
+### Retrieve Users
 
 **Endpoint:** `/users`  
-**Método:** `GET`  
-**Autenticación:** No requerida
+**Method:** `GET`  
+**Authentication:** Not required
 ![Users Endpoint](images/Users-Endpoint.JPG)
 
-### Obtener Usuarios Internos
+### Retrieve Internal Users
 
 **Endpoint:** `/internal-users`  
-**Método:** `GET`  
-**Autenticación:** Requerida
+**Method:** `GET`  
+**Authentication:** Required
 
 **Headers:**
 
@@ -86,63 +86,63 @@ El objetivo del proyecto es obtener información de clientes desde un proveedor 
 Authorization: Bearer <access_token>
 ```
 
-**Parámetros de Query:**
+**Query Parameters:**
 
 ```
-skip: int (opcional, por defecto 0)
-limit: int (opcional, por defecto 10)
+skip: int (optional, default 0)
+limit: int (optional, default 10)
 ```
 
 ![Internal Users Endpoint](images/Internal-Users-Endpoint.JPG)
 
-## Encriptar Datos
+## Encrypt Data
 
 **Endpoint:** `/encrypt`  
-**Método:** `POST`  
-**Cuerpo:**
+**Method:** `POST`  
+**Body:**
 
 ```json
 {
-	"data": "Texto a cifrar"
+	"data": "Text to encrypt"
 }
 ```
 
 ![Encrypt Endpoint](images/Test-Encryption.JPG)
 
-## Desencriptar Datos
+## Decrypt Data
 
 **Endpoint:** `/decrypt`  
-**Método:** `POST`  
-**Cuerpo:**
+**Method:** `POST`  
+**Body:**
 
 ```json
 {
-	"token": "Dato Cifrado"
+	"token": "Decrypted data"
 }
 ```
 
 ![Decrypt Endpoint](images/Test-Decryption.JPG)
 
-## Análisis de Riesgo
+## Risk Analysis
 
-### Confidencialidad
+### Confidentiality
 
-- **Medida**: Uso de encriptación para datos sensibles como números de tarjeta de crédito, CVV y números de cuenta.
-- **Riesgo**: Exposición de datos sensibles en caso de una brecha de seguridad.
-- **Mitigación**: Implementación de Vault para la gestión de claves y uso de cifrado fuerte (Fernet).
+- **Measure**: Use of encryption for sensitive data such as credit card numbers, CVV, and account numbers.
+- **Risk**: Exposure of sensitive data in the event of a security breach.
+- **Mitigation**: Implementation of Vault for key management and use of strong encryption (Fernet).
 
-### Integridad
+### Integrity
 
-- **Medida**: Validación de datos entrantes y salientes.
-- **Riesgo**: Alteración de datos por parte de usuarios malintencionados.
-- **Mitigación**: Uso de tokens de acceso para autenticar y autorizar solicitudes.
+- **Measure**: Validation of incoming and outgoing data.
+- **Risk**: Data alteration by malicious users.
+- **Mitigation**: Use of access tokens to authenticate and authorize requests.
 
-### Autenticidad
+### Authenticity
 
-- **Medida**: Autenticación de usuarios mediante tokens JWT.
-- **Riesgo**: Acceso no autorizado a los datos.
-- **Mitigación**: Implementación de OAuth2 y JWT para la gestión de sesiones y accesos.
+- **Measure**: User authentication through JWT tokens.
+- **Risk**: Unauthorized access to data.
+- **Mitigation**: Implementation of OAuth2 and JWT for session and access management.
 
-## Diagrama de clases
+## Class Diagram
 
 ![Diagrama Clases](images/Diagrama-clases.png)
