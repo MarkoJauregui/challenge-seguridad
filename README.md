@@ -1,4 +1,4 @@
-# Challenge - Seguridad Informática
+# Challenge - Informational Security
 
 ## Objective
 
